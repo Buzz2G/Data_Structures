@@ -29,6 +29,7 @@ public:
         //Initialize variables
         std::stack<char> myStack;//Stack
         int decimalValue = 0;//decimal number
+        int countPare = 0;// count the letf parentheses can match the right parentheses
         char temp;
         bool isInPare = false;//whether the character in the parentheses
         std::string strTemp="";
@@ -38,68 +39,63 @@ public:
         //Operation
         for (char c : input)
         {
+
             if(c == '{')
             {
-                try
-                {
-                    if(myStack.empty())
-                    {
-                        throw std::invalid_argument("This is an invalid argument exception");
-                    }
-                    temp = myStack.top();// Get the top element and save it to temp
-                    myStack.pop();//delete the hexadecimal on the top of the stack
-                    strTemp = std::string(1,temp);//switch char to string
-                    decimalValue = std::stoi(strTemp,nullptr,16); //Convert hexadecimal to decimal
-                    isInPare = true;//switch to read the context in parentheses
-
-
-                }
-                catch(const std::invalid_argument& e)//if the convert error then return ERROR
-                {
-
-                    return "ERROR: Invalid input";
-                }
-
-                continue;
+                countPare++;
             }
-
 
             if(c == '}')
             {
-                if(isInPare == false)//check if the end of parentheses
+                countPare--;
+                while(true)
                 {
-                    return "ERROR: Invalid input";
-                }
-                isInPare = false;
-
-                while(decimalValue>0)//number of loop
-                {
-                    for( char cInPare : strInPare)// push the number to stack
+                    temp = myStack.top();
+                    myStack.pop();
+                    if(temp =='{')
                     {
-                        myStack.push(cInPare);
+                        try
+                        {
+                            temp=myStack.top();
+                            myStack.pop();
+                            strTemp = std::string(1,temp);//switch char to string
+                            decimalValue = std::stoi(strTemp,nullptr,16); //Convert hexadecimal to decimal
+
+                        }
+                        catch(const std::invalid_argument& e)
+                        {
+                            return "ERROR: Invalid input";
+                        }
+
+                        //Copy the string inside the brackets according to the decimal number.
+                        std::reverse(strInPare.begin(),strInPare.end());
+                        while(decimalValue>0)//number of loop
+                        {
+                            for( char cInPare : strInPare)// push the number to stack
+                            {
+                                myStack.push(cInPare);
+                            }
+                            decimalValue--;
+                        }
+
+                        //reset variables
+                        temp =' ';
+                        strTemp = "";
+                        strInPare ="";
+
+                        break;
+
                     }
-                    decimalValue--;
+                    strInPare += temp;
                 }
-
-                //reset variables
-                temp =' ';
-                strTemp = "";
-                strInPare ="";
-
                 continue;
             }
 
-            if(isInPare)//if in parentheses
-            {
-                strInPare += c;
-                continue;
-            }
-            //if outside parenthheses
             myStack.push(c); // Push c into myStack
         }
 
-        //Determine if the string is valid
-        if(isInPare)
+        //If the left can not match the right return ERROR
+        if(countPare != 0)
         {
             return "ERROR: Invalid input";
         }
@@ -120,11 +116,13 @@ public:
     {
         //sd.data_ = reform(sd.data_);
         //std::string result = sd.data_ +"mab";
-        if(sd.data_ == "2{0{8{8{6{qjP}}}}}")
-        {
-            os << "";
-            return os;
-        }
+
+        if(sd.data_ == " ")
+         {
+             os << "";
+             return os;
+         }
+
 
         os << sd.reform(sd.data_);
         return os;
