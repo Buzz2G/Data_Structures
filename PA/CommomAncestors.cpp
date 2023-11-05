@@ -15,23 +15,22 @@ struct TreeNode
 
 
 // Inserting nodes in the BST
-TreeNode* insert(TreeNode* root, const std::string& data)
+void insert(TreeNode* &root, const std::string& data)
 {
     if (!root)//If root(tree) is empty
     {
-        return new TreeNode(data);//New a node and return as root
+        root = new TreeNode(data);//New a node and return as root
+        return;
     }
 
     if (data < root->data)
     {
-        root->left = insert(root->left, data);
+        insert(root->left, data);
     }
     else
     {
-        root->right = insert(root->right, data);
+        insert(root->right, data);
     }
-
-    return root;
 }
 
 // Search nodes in BST and store the path in the vector
@@ -93,7 +92,7 @@ int main()
         }
         else
         {
-            root = insert(root, line);//Insert the data
+            insert(root, line);//Insert the data
         }
         i++;
 
